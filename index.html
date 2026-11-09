@@ -35,7 +35,7 @@ function calculate(prefix){const values=days.map((_,i)=>document.getElementById(
 function update(){stepResult=calculate('s');weightResult=calculate('w');document.getElementById('stepsAvg').textContent=stepResult===null?'—':formatterSteps.format(stepResult);document.getElementById('weightAvg').textContent=weightResult===null?'—':formatterWeight.format(weightResult);document.getElementById('copySteps').disabled=stepResult===null;document.getElementById('copyWeight').disabled=weightResult===null}
 holder.addEventListener('input',update);
 async function copy(value,formatter){if(value===null)return;const str=formatter.format(value);try{await navigator.clipboard.writeText(str);document.getElementById('status').textContent='Media copiada: '+str}catch(e){document.getElementById('status').textContent='No se pudo copiar automáticamente. Selecciona la media y cópiala manualmente.'}}
-document.getElementById('copySteps').addEventListener('click',()=>copy(stepResult,formatterSteps));
+document.getElementById('copySteps').addEventListener('click',()=>copy(stepResult,{format:v=>String(Math.round(v))}));
 document.getElementById('copyWeight').addEventListener('click',()=>copy(weightResult,formatterWeight));
 document.getElementById('clear').addEventListener('click',()=>{document.querySelectorAll('input').forEach(el=>el.value='');update();document.getElementById('status').textContent='Datos borrados.'});
 </script>
