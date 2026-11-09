@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora semanal | Caballero</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#1c1c1c;background:#faf7f0}*{box-sizing:border-box}body{margin:0;padding:32px 14px}.wrap{max-width:780px;margin:auto}header{border-bottom:3px solid #b99254;padding-bottom:18px;margin-bottom:26px}h1{font-size:26px;margin:0 0 8px}p{line-height:1.5;color:#575047}.brand-logo{display:block;width:100%;max-width:650px;height:auto;object-fit:contain;object-position:left center;margin:0 auto 24px}.brand-fallback{display:none;font-size:12px;font-weight:bold;letter-spacing:3px;color:#a17a3f;margin-bottom:14px}.title-row{display:flex;align-items:center;gap:10px}.title-row h1{margin:0 0 8px}.ico{width:21px;height:21px;flex:none;stroke:#a17a3f;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}.title-row .ico{width:25px;height:25px;margin-bottom:8px}.result-label{display:flex;align-items:center;gap:7px}.result-label .ico{width:17px;height:17px}.panel{background:white;border:1px solid #e3d5bc;border-radius:14px;overflow:hidden;box-shadow:0 5px 20px #5543210c}.head,.line{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:center;padding:11px 16px}.head{background:#f1e5cf;font-weight:bold}.head span{display:flex;align-items:center;gap:6px}.head .ico{width:17px;height:17px}.line:nth-child(odd){background:#fdfbf7}.line label{font-weight:600;text-transform:capitalize}.line input{width:100%;min-width:0;border:1px solid #d6c5a7;border-radius:7px;padding:10px;font-size:16px;background:#fff;color:#1c1c1c}.line input:focus{outline:2px solid #b99254;outline-offset:1px}.results{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}.result{background:#f1e5cf;border:1px solid #c8ad80;border-radius:12px;padding:18px}.result strong{display:block;font-size:25px;margin:8px 0;overflow-wrap:anywhere}.result span{font-size:13px;color:#5d513d}.result button{background:#1c1c1c;color:white;border:0;border-radius:7px;padding:9px 14px;cursor:pointer}.result button:disabled{opacity:.4;cursor:default}.note{font-size:13px;margin-top:20px}.footer{margin-top:18px;text-align:right}#clear{background:transparent;border:1px solid #c8ad80;border-radius:8px;padding:10px 15px;cursor:pointer}@media(max-width:480px){body{padding:18px 10px}h1{font-size:21px}.head,.line{gap:7px;padding:10px 9px}.line input{padding:9px 5px;font-size:15px}.results{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+<img id="brandLogo" class="brand-logo" src="logo.png" alt="Caballero · Salud, entrenamiento y nutrición">
+<div id="brandFallback" class="brand-fallback">CABALLERO · SALUD | ENTRENAMIENTO | NUTRICIÓN</div>
+<div class="title-row"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg><h1>Calculadora de feedback semanal</h1></div>
+<p>Introduce los pasos y pesajes de cada día. Copia las dos medias en tu formulario de seguimiento.</p>
+</header>
+<section class="panel"><div class="head"><span>Día</span><span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="8" cy="15" rx="3" ry="4" transform="rotate(-20 8 15)"/><ellipse cx="16" cy="8" rx="3" ry="4" transform="rotate(20 16 8)"/></svg>Pasos</span><span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M9 9a4 4 0 0 1 6 0M12 9v3"/></svg>Peso (kg)</span></div><div id="days"></div></section>
+<section class="results"><div class="result"><span class="result-label"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="8" cy="15" rx="3" ry="4" transform="rotate(-20 8 15)"/><ellipse cx="16" cy="8" rx="3" ry="4" transform="rotate(20 16 8)"/></svg>Media diaria de pasos</span><strong id="stepsAvg">—</strong><button id="copySteps" disabled>Copiar media</button></div><div class="result"><span class="result-label"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M9 9a4 4 0 0 1 6 0M12 9v3"/></svg>Media de pesajes (kg)</span><strong id="weightAvg">—</strong><button id="copyWeight" disabled>Copiar media</button></div></section>
+<p class="note" id="status" role="status" aria-live="polite">Los campos vacíos no se incluyen en la media. Para obtener la media semanal completa, introduce los siete días. Los datos permanecen únicamente en esta página y no se envían ni almacenan.</p>
+<div class="footer"><button id="clear">Borrar datos</button></div>
+</main>
+<script>
+const logo=document.getElementById('brandLogo');
+const fallback=document.getElementById('brandFallback');
+logo.onerror=()=>{logo.style.display='none';fallback.style.display='block'};
+const days=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+const holder=document.getElementById('days');
+days.forEach((day,i)=>{const row=document.createElement('div');row.className='line';row.innerHTML=`<label for="s${i}">${day}</label><input id="s${i}" type="number" min="0" step="1" inputmode="numeric" placeholder="—" aria-label="Pasos ${day}"><input id="w${i}" type="number" min="0" step="any" inputmode="decimal" placeholder="—" aria-label="Peso ${day} en kg">`;holder.appendChild(row)});
+const formatterSteps=new Intl.NumberFormat('es-ES',{maximumFractionDigits:0});
+const formatterWeight=new Intl.NumberFormat('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2});
+let stepResult=null,weightResult=null;
+function calculate(prefix){const values=days.map((_,i)=>document.getElementById(prefix+i).value.trim()).filter(x=>x!=='').map(Number);if(!values.length)return null;if(values.some(x=>!Number.isFinite(x)||x<0))return null;return values.reduce((a,b)=>a+b,0)/values.length}
+function update(){stepResult=calculate('s');weightResult=calculate('w');document.getElementById('stepsAvg').textContent=stepResult===null?'—':formatterSteps.format(stepResult);document.getElementById('weightAvg').textContent=weightResult===null?'—':formatterWeight.format(weightResult);document.getElementById('copySteps').disabled=stepResult===null;document.getElementById('copyWeight').disabled=weightResult===null}
+holder.addEventListener('input',update);
+async function copy(value,formatter){if(value===null)return;const str=formatter.format(value);try{await navigator.clipboard.writeText(str);document.getElementById('status').textContent='Media copiada: '+str}catch(e){document.getElementById('status').textContent='No se pudo copiar automáticamente. Selecciona la media y cópiala manualmente.'}}
+document.getElementById('copySteps').addEventListener('click',()=>copy(stepResult,formatterSteps));
+document.getElementById('copyWeight').addEventListener('click',()=>copy(weightResult,formatterWeight));
+document.getElementById('clear').addEventListener('click',()=>{document.querySelectorAll('input').forEach(el=>el.value='');update();document.getElementById('status').textContent='Datos borrados.'});
+</script>
+</body>
+</html>
